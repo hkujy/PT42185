@@ -1,7 +1,8 @@
 """
 Transit Assignment
 """
-LARGE_FRE = 999999.9 # a large number for the frequency on the walking link
+LARGE_FRE_DELTA = 999999.9 # a large number for the frequency on the walking link
+
 class bus_line_class():
     def __init__(self,name,id,fre):
         self.name = name
@@ -44,11 +45,11 @@ def input_network():
     # create graph
     graph = graph_class()
     # add lines 
-    graph.lines.append(bus_line_class("G1",0, 1/6))
-    graph.lines.append(bus_line_class("G2",1, 1/6))
-    graph.lines.append(bus_line_class("G3",0.07, 1/15))
-
-
+    graph.lines.append(bus_line_class("G1",0, 6))
+    graph.lines.append(bus_line_class("G2",1, 6))
+    graph.lines.append(bus_line_class("G3",2, 15))
+    graph.lines.append(bus_line_class("G4",3, 3))
+    graph.lines.append(bus_line_class("Walk",4,LARGE_FRE_DELTA))
 
     # input nodes
     graph.nodes.append(node_class("A",0))
@@ -60,15 +61,35 @@ def input_network():
 
     # input links
     graph.links.append(link_class("A-B",0,25))
+    graph.links[0].lines.append[graph.lines[0]]
+    graph.links[0].cost = 25
     graph.links.append(link_class("A-X2",1))
+    graph.links[1].lines.append[graph.lines[1]]
+    graph.links[1].cost = 7
     graph.links.append(link_class("X2-Y",2))
+    graph.links[2].lines.append(graph.lines[4])
+    graph.links[2].cost = 6
     graph.links.append(link_class("Y-B",3))
+    graph.links[3].lines(graph.lines[3])
+    graph.links[3].cost = 10
     graph.links.append(link_class("X2-X",4))
+    graph.links[4].lines.append(graph.lines[4])
+    graph.links[4].cost = 0
     graph.links.append(link_class("X-X2",5))
+    graph.links[5].lines(graph.lines[1])
+    graph.links[5].cost = 0
     graph.links.append(link_class("X-Y3",6))
+    graph.links[6].lines.append(graph.lines[2])
+    graph.links[6].cost = 4
     graph.links.append(link_class("Y-Y3",7))
+    graph.links[7].lines.append(graph.lines[2])
+    graph.links[7].cost = 0
     graph.links.append(link_class("Y3-Y",8))
+    graph.links[8].lines.append(graph.lines[4])
+    graph.links[8].cost = 0
     graph.links.append(link_class("Y3-B",9))
+    graph.links[9].lines.append[graph.lines[4]]
+    graph.links[9].cost = 4
 
     # input tail and head for links
     ## "AB"
@@ -134,7 +155,7 @@ def input_network():
 
     # TODO: print and check then network structure
 
-
+    # ' node, outlink, link tail, head, cost, fre'
 
 
 
