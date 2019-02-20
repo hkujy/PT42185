@@ -99,8 +99,8 @@ def input_network():
     graph.links[0].tail_node.append(graph.nodes[0])
     graph.links[0].head_node.append(graph.nodes[3])
     ## "A-X2"
-    graph.links[1].tail_node.append(graph.nodes[1])
-    graph.links[1].head_node.append(graph.nodes[2])
+    graph.links[1].tail_node.append(graph.nodes[0])
+    graph.links[1].head_node.append(graph.nodes[1])
     ## "X2-Y"
     graph.links[2].tail_node.append(graph.nodes[1])
     graph.links[2].head_node.append(graph.nodes[2])
@@ -135,10 +135,12 @@ def input_network():
     graph.nodes[1].out_links.append(graph.links[2])
     graph.nodes[1].out_links.append(graph.links[4])
     graph.nodes[1].in_links.append(graph.links[5])
+    graph.nodes[1].in_links.append(graph.links[1])
     ## node Y
     graph.nodes[2].out_links.append(graph.links[3])
     graph.nodes[2].out_links.append(graph.links[7])
     graph.nodes[2].in_links.append(graph.links[8])
+    graph.nodes[2].in_links.append(graph.links[2])
     ## node B
     graph.nodes[3].in_links.append(graph.links[0])
     graph.nodes[3].in_links.append(graph.links[3])
@@ -166,7 +168,11 @@ def input_network():
         for node in graph.nodes:
             for link in node.out_links:
                 print("{0},{1},{2},{3},{4},{5},{6}".format(node.name,link.name,link.cost,link.tail_node[0].name,link.head_node[0].name,link.lines[0].name,link.lines[0].fre),file=f)
-            pass
+
+        print("Node,InLink,LinkTime,LinkTail,LinkHead,LinkLine,Fre", file=f)
+        for node in graph.nodes:
+            for link in node.in_links:
+                print("{0},{1},{2},{3},{4},{5},{6}".format(node.name,link.name,link.cost,link.tail_node[0].name,link.head_node[0].name,link.lines[0].name,link.lines[0].fre),file=f)
        
 
     return graph

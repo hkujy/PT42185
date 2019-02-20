@@ -48,13 +48,15 @@ def get_vector_C(g:graph_class):
 def get_A_ub_and_B_ub(g:graph_class):
     """
      v_{a}*<=f*w_{i} is tranformed to v_{a} - f*w_{i} <=0
+     v_{a} >=0
+     -v_{a}<=0
      1. the first coefficient is for link {a}
      2. the secont coefficient is for node {i}, which is the tail node of link i
     """
     # demension of B_ub  = number of links
-    B_ub = [0]*len(g.links)
+    B_ub = [0]*(2*len(g.links))
     A_ub = []
-    for l in range(0,len(g.links)):
+    for l in range(0,2*len(g.links)):
         A_ub.append([0]*(len(g.links) + len(g.nodes)))
 
     # set coefficients following the sequence of links
@@ -67,6 +69,12 @@ def get_A_ub_and_B_ub(g:graph_class):
         A_ub[row][w_var_index] = -1*f_coefficient
         B_ub[row] = 0
         row =  row + 1
+    for l in g.links:
+        v_var_index = l.id
+        A_ub[row][v_var_index] = -1
+        B_ub[row] = 0
+        row =  row + 1
+
     
     return A_ub, B_ub
 
@@ -91,9 +99,15 @@ def get_A_eq_and_B_eq(g:graph_class):
             A_eq[row][out_link_var_index] = 1
         if n.name =="A": 
             B_eq[row] = 1
+        elif n.name =="B":
+            # This is important, I forgot this first time
+            B_eq[row] = -1  
         else:
             B_eq[row] = 0
         row = row + 1
+    for row in A_eq:
+        print(row)
+    print(B_eq)
     return A_eq, B_eq
     pass
 
@@ -120,15 +134,8 @@ def model(network:graph_class):
         create a, b, c matrix for the LP problem
     """
     C = get_vector_C(network)
-    print (C)
     (A_ub, B_ub) = get_A_ub_and_B_ub(network)
-    print(A_ub)
-    print(B_ub)
-    print ("*******************")
-   
     (A_eq, B_eq) = get_A_eq_and_B_eq(network)
-    print(A_eq)
-    print(B_eq)
     (lb, ub, bounds) = get_lb_and_ub(network) 
     with open("print_model.csv","w+") as f:
         pass
