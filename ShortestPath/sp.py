@@ -3,10 +3,10 @@ Reference
 https://networkx.github.io/documentation/stable/tutorial.html
 
 1. Ths code finds the shortest path using the network shown in the class ppt
-2. Through this toy example, you can play with the networkX package
-3. There should be shortest path package or lib in other programming language 
-4. For our course, it is not required for you to learn to code your own shortest path
-5. However, as a student learning transportation, know how to find shortest paht is a core competences. You will need it almost everywhere.
+2. Through this toy example, you can play with the python networkX package
+3. If you use matlab or other programming languages, there be shortest path lib or function 
+4. For our course, it is not required for you to learn to code your own shortest path. But you are more than welcomed to do it yourself. 
+5. However, as a student learning transportation, know how to find shortest path is a core competence. You will need it almost everywhere.
 """
 import networkx as nx
 import matplotlib
@@ -28,8 +28,7 @@ G.add_edge('C','D', weight = 2)
 G.add_edge('B','E', weight = 3)
 G.add_edge('D','E', weight = 3)
 # there are other ways adding nodes and edges you can check it online
-# find the shortest path 
-
+# find the shortest path from node A 
 pred, dist = nx.dijkstra_predecessor_and_distance(G, 'A')
 print("The pred for each node with respect to source A")
 print(sorted(pred.items()))
