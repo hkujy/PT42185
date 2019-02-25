@@ -1,7 +1,10 @@
 """
-    graph classes
+    graph class
 """
 class bus_line_class():
+    """
+        bus line class
+    """
     def __init__(self,name,id,fre):
         self.name = name
         self.id = id
@@ -9,6 +12,9 @@ class bus_line_class():
         self.stops = []
     pass
 class node_class():
+    """
+        node class containing node attributes
+    """
     def __init__(self, node_name, node_id):
         self.id = node_id
         self.name = node_name
@@ -18,6 +24,9 @@ class node_class():
         self.demand = 0
     pass
 class link_class():
+    """
+        link class, containing link attributes
+    """
     def __init__(self,link_name,link_id):
         self.id = link_id
         self.name = link_name
@@ -28,6 +37,9 @@ class link_class():
         self.fre = -1.0
     pass
 class graph_class():
+    """
+        Graph class combing link, node and bus lines
+    """
     def __init__(self):
         self.links = []
         self.nodes = []

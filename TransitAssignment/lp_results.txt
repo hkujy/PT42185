@@ -1,0 +1,17 @@
+Objective = 27.75
+Link A-B, Flow v_a = 0.50
+Link A-X2, Flow v_a = 0.50
+Link X2-Y, Flow v_a = 0.50
+Link Y-B, Flow v_a = 0.42
+Link X2-X, Flow v_a = 0.00
+Link X-X2, Flow v_a = 0.00
+Link X-Y3, Flow v_a = 0.00
+Link Y-Y3, Flow v_a = 0.08
+Link Y3-Y, Flow v_a = 0.00
+Link Y3-B, Flow v_a = 0.08
+Node A, Wait w_i = 3.00
+Node X2, Wait w_i = 0.00
+Node Y, Wait w_i = 1.25
+Node B, Wait w_i = 0.00
+Node X, Wait w_i = 0.00
+Node Y3, Wait w_i = 0.00

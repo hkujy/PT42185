@@ -5,39 +5,8 @@
 """
 from graph import bus_line_class,node_class,link_class,graph_class
 
-LARGE_FRE_DELTA  = 1000.0 # a large number for the frequency on the walking link
-# class bus_line_class():
-#     def __init__(self,name,id,fre):
-#         self.name = name
-#         self.id = id
-#         self.fre = fre
-#         self.stops = []
-#     pass
-# class node_class():
-#     def __init__(self, node_name, node_id):
-#         self.id = node_id
-#         self.name = node_name
-#         self.out_links = []
-#         self.in_links = []
-#         self.lines = []
-#     pass
-# class link_class():
-#     def __init__(self,link_name,link_id,cost):
-#         self.id = link_id
-#         self.name = link_name
-#         self.tail_node = []  
-#         self.head_node = []
-#         self.cost = cost
-#         self.lines = []
-#         self.fre = -1.0
-#     pass
-# class graph_class():
-#     def __init__(self):
-#         self.links = []
-#         self.nodes = []
-#         self.lines = []
-#     pass
-
+ # a large number for the frequency on the walking link
+LARGE_FRE_DELTA  = 1000.0
 
 def input_network():
     """
@@ -126,7 +95,6 @@ def input_network():
     graph.links[9].tail_node.append(graph.nodes[5])
     graph.links[9].head_node.append(graph.nodes[3])
 
-
     # input outgoing/incoming links for nodes 
     ## node A
     graph.nodes[0].out_links.append(graph.links[0])
@@ -159,11 +127,11 @@ def input_network():
 
     # ' node, outlink, link tail, head, cost, fre'
 
-    with open ('network.csv', 'w+') as f:
+    with open ('check_network_input.csv', 'w+') as f:
         """
             output to check the network 
         """
-        pass
+        print("This file is created to check the network input", file=f)
         print("Node,OutLink,LinkTime,LinkTail,LinkHead,LinkLine,Fre", file=f)
         for node in graph.nodes:
             for link in node.out_links:

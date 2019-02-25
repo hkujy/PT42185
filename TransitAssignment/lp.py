@@ -1,5 +1,6 @@
 """
     This is for creating the Lp Problem 
+    *LP is prerequsit of the course*
     LP Model
         min CX
     Subject 
@@ -15,10 +16,7 @@ Remarks:
 
 1. if you are using other package or method to solve LP, i.e., CPLEX, there are different ways (probably simple) to add constraints and build the model.
 Nevertheless, as long as you know how to create matrix A, B, C, you should be able to solve general LP problem.
-
 2. One important step is to ensure the coefficient is corresponding to the decsion variables
-
-
 3. Dimension of C = Dimension of x = number of decision variables = number of links + number of nodes
 4. Dimension of b_eq = number of nodes: flow conservation constraints at each node
 5. Dimension of b_ub = number of links : flow distribution constraint
@@ -29,7 +27,6 @@ Nevertheless, as long as you know how to create matrix A, B, C, you should be ab
 
 from graph import graph_class
 from scipy.optimize import linprog
-
 
 def get_vector_C(g:graph_class):
     """
@@ -105,9 +102,6 @@ def get_A_eq_and_B_eq(g:graph_class):
         else:
             B_eq[row] = 0
         row = row + 1
-    for row in A_eq:
-        print(row)
-    print(B_eq)
     return A_eq, B_eq
     pass
 
@@ -137,12 +131,21 @@ def model(network:graph_class):
     (A_ub, B_ub) = get_A_ub_and_B_ub(network)
     (A_eq, B_eq) = get_A_eq_and_B_eq(network)
     (lb, ub, bounds) = get_lb_and_ub(network) 
-    with open("print_model.csv","w+") as f:
-        pass
+    # solve lp using linprog function    
     res = linprog(C,A_ub=A_ub,b_ub=B_ub,A_eq=A_eq,b_eq=B_eq, bounds=bounds)
+    # print output in the files
+    with open("lp_results.txt",'w+') as f:
+        """
+            ouput lp results in the file
+        """
+        print("Objective = {0:4.2f}".format(res.fun), file = f)
+        for l in network.links:
+            print("Link {0}, Flow v_a = {1:4.2f}".format(l.name, res.x[l.id]), file=f)
+        for n in network.nodes:
+            print("Node {0}, Wait w_i = {1:4.2f}".format(n.name, res.x[len(network.links)+n.id]),file=f)
+            
 
 
-
-    print(res)
+    # print(res)
 
 

@@ -1,3 +1,4 @@
+This file is created to check the network input
 Node,OutLink,LinkTime,LinkTail,LinkHead,LinkLine,Fre
 A,A-B,25,A,B,G1,0.16666666666666666
 A,A-X2,7,A,X2,G2,0.16666666666666666
