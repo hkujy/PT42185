@@ -1,11 +1,13 @@
 """
     The code is created to test the ga algorithm in python
 """
+import lower_level
 import array
 import random
 import numpy
 import math
 import os
+import matplotlib.pyplot as plt
 from deap import algorithms
 from deap import base
 from deap import creator
@@ -13,11 +15,11 @@ from deap import tools
 
 
 # parameters 
-nvars = 2  # number of lines = number frequency to be designed
-nbit_per_var = 2  # number of bits per decision variable
-lb = [1,1,1,1]  # lower bound for freuqency： 1 veh /per hour
+nvars = 4  # number of lines = number frequency to be designed
+nbit_per_var = 8  # number of bits per decision variable
+lb = [3,3,3,3]  # lower bound for freuqency： 1 veh /per hour
 # ub = [10,10,10,10] # upper bound for the frequency: 10 veh/hour
-ub = [2,2,2,2] # upper bound for the frequency: 10 veh/hour
+ub = [15,15,15,15] # upper bound for the frequency: 10 veh/hour
 
 # GA parameters 
 npop = 5  # population size 
@@ -28,7 +30,9 @@ mutation_rate = 0.2
 
 
 # create min fitness, weight = (1.0,) implies single objective optimization
-creator.create("FitnessMin", base.Fitness, weights=(1.0,))
+# weight = -1 means that it is a minimization problem 
+# if weight = 1, it means that is a maximization problem
+creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
 creator.create("Individual", list, fitness=creator.FitnessMin)
 
 toolbox = base.Toolbox()
@@ -49,8 +53,10 @@ toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 def get_fitness(individual):
     # Step 1: decode binary representation to float decision variables
     fre = decode(individual,nbit_per_var,nvars,lb,ub)
-    fitness_val =  sum(fre)
-    return fitness_val,
+    # Step 2: solve lower level assignment model
+    res =  lower_level.assignment(fre)
+    # return the objective function as the lower level solution
+    return res.fun,
 
 # define evaluation method
 toolbox.register("evaluate", get_fitness)
@@ -78,8 +84,10 @@ def main():
     # Evolv the population
     g = 0
     # while max(fits) < 100 and g < 10:
-    while g < 2:
-        g = g + 1
+    # best soluiton found in each iteration
+    best_in_each_generation = []
+    global_best = []
+    while g < 25:
         print(" --- Generation %i ----" % g)
         # select the net generation individual
         offspring = toolbox.select(pop, len(pop))
@@ -114,14 +122,38 @@ def main():
         std = abs(sum2 / length - mean**2)**0.5
         
         print("  Min %s" % min(fits))
-        print("  Max %s" % max(fits))
-        print("  Avg %s" % mean)
-        print("  Std %s" % std)
+        # print("  Max %s" % max(fits))
+        # print("  Avg %s" % mean)
+        # print("  Std %s" % std)
 
-        print("-- End of (successful) evolution --")
+        best_in_each_generation.append(tools.selBest(pop, 1)[0])
+        if g == 0:
+            # in the first iteration set global best solution
+            global_best.append(tools.selBest(pop, 1)[0])
+        else:
+            # in the following generations, if the global best is replaced by the current best
+            if tools.selBest(pop, 1)[0].fitness.values[0] < global_best[-1].fitness.values[0]:
+                # global_best = tools.selBest(pop, 1)[0] 
+                global_best.append(tools.selBest(pop, 1)[0])
+            else:
+                # if not updated, then the global best does not change and equal to the one in previous generation
+                global_best.append(global_best[-1])
+        g = g + 1
+    print("-- End of (successful) evolution --")
 
-        best_ind = tools.selBest(pop, 1)[0]
-        print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+    # best_ind = tools.selBest(pop, 1)[0]
+    # best_ind = tools.selBest(pop, 1)[0]
+    print("Best individual is %s, %s" % (global_best[-1], global_best[-1].fitness.values))
+    # plot convergence 
+    x = []
+    y = []
+    for i in range(0, len(global_best)):
+        x.append(i)
+        y.append(global_best[i].fitness.values)
+    plt.plot(x,y,'bo',x,y,'k')
+    plt.ylabel('Fitness Value')
+    plt.xlabel('No. of Generations')
+    plt.show()
 
 def decode(chrom,nbit,nvar,lb,ub):
     """
