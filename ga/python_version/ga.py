@@ -17,14 +17,13 @@ from deap import tools
 # parameters 
 nvars = 4  # number of lines = number frequency to be designed
 nbit_per_var = 8  # number of bits per decision variable
-lb = [3,3,3,3]  # lower bound for freuqency： 1 veh /per hour
-# ub = [10,10,10,10] # upper bound for the frequency: 10 veh/hour
-ub = [15,15,15,15] # upper bound for the frequency: 10 veh/hour
+lb = [3,3,3,3]  # lower bound for freuqency： 3 veh /per hour
+ub = [15,15,15,15] # upper bound for the frequency: 15 veh/hour
 
 # GA parameters 
-npop = 5  # population size 
-ngen = 5  # number of generations
-crossover_rate = 0.5
+npop = 10  # population size 
+ngen = 25  # number of generations
+crossover_rate = 0.8
 mutation_rate = 0.2
 
 
@@ -45,7 +44,7 @@ toolbox.register("attr_bool", random.randint, 0, 1)
 # define how to init a individual 
 # n= 4 means there are four transit lines
 toolbox.register("individual", tools.initRepeat, creator.Individual,
- toolbox.attr_bool, n=nvars*nbit_per_var)
+ toolbox.attr_bool, n = nvars*nbit_per_var)
 # based on the init for individual, initialize a population
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
@@ -62,39 +61,36 @@ def get_fitness(individual):
 toolbox.register("evaluate", get_fitness)
 # define cross over and mutation operation
 toolbox.register("mate", tools.cxOnePoint)
-toolbox.register("mutate", tools.mutFlipBit, indpb=mutation_rate)
-toolbox.register("select", tools.selTournament, tournsize=3)
+toolbox.register("mutate", tools.mutFlipBit, indpb = mutation_rate)
+toolbox.register("select", tools.selTournament, tournsize = 3)
 
 def main():
     """
         main program for the GA
     """
     random.seed(64)
-    # step 1: creat the population
-    pop = toolbox.population(n=npop)  
+    # step 1: create the population
+    pop = toolbox.population(n = npop)  
     # step 2: evaluate the population
     fitnesses = list(map(toolbox.evaluate, pop))
     for ind, fit  in zip(pop, fitnesses):
         # ind.fitness.values = fit
         ind.fitness.values = fit
 
-    # CXPB, MUTPB = 0.5, 0.2
     fits = [ind.fitness.values[0] for ind in pop]
 
-    # Evolv the population
+    # Evolve the population
     g = 0
-    # while max(fits) < 100 and g < 10:
-    # best soluiton found in each iteration
-    best_in_each_generation = []
+    best_in_each_generation = [] # best solution in each iteration
     global_best = []
-    while g < 25:
+    while g < ngen:
         print(" --- Generation %i ----" % g)
         # select the net generation individual
         offspring = toolbox.select(pop, len(pop))
         # Clone the selected individuals
         offspring = list(map(toolbox.clone, offspring))
 
-        # next is to apply crossover and mutaktion on the offspring
+        # next is to apply crossover and mutation on the offspring
         for child1, child2 in zip(offspring[::2], offspring[1::2]):
             if random.random() < crossover_rate:
                 toolbox.mate(child1, child2)
@@ -116,35 +112,36 @@ def main():
         # Gather all the fitnesses in one list and print the stats
         fits = [ind.fitness.values[0] for ind in pop]
         
-        length = len(pop)
-        mean = sum(fits) / length
-        sum2 = sum(x*x for x in fits)
-        std = abs(sum2 / length - mean**2)**0.5
-        
-        print("  Min %s" % min(fits))
+        # print results summary in each iteration
+        # length = len(pop)
+        # mean = sum(fits) / length
+        # sum2 = sum(x*x for x in fits)
+        # std = abs(sum2 / length - mean**2)**0.5
+        # print("  Min %s" % min(fits))
         # print("  Max %s" % max(fits))
         # print("  Avg %s" % mean)
         # print("  Std %s" % std)
 
+        # store the best solution in each iteration
         best_in_each_generation.append(tools.selBest(pop, 1)[0])
         if g == 0:
-            # in the first iteration set global best solution
+            # in the first generation, set global best solution
             global_best.append(tools.selBest(pop, 1)[0])
         else:
-            # in the following generations, if the global best is replaced by the current best
+            # in the following generations, 
+            # compare the global best with the best solution obtained in the generation
+            # if the newly generated solution is better, then update the global best
             if tools.selBest(pop, 1)[0].fitness.values[0] < global_best[-1].fitness.values[0]:
-                # global_best = tools.selBest(pop, 1)[0] 
                 global_best.append(tools.selBest(pop, 1)[0])
             else:
                 # if not updated, then the global best does not change and equal to the one in previous generation
                 global_best.append(global_best[-1])
         g = g + 1
     print("-- End of (successful) evolution --")
-
-    # best_ind = tools.selBest(pop, 1)[0]
-    # best_ind = tools.selBest(pop, 1)[0]
-    print("Best individual is %s, %s" % (global_best[-1], global_best[-1].fitness.values))
-    # plot convergence 
+    # decode the best solution value
+    fre = decode(global_best[-1],nbit_per_var,nvars,lb,ub)
+    print("Best individual is %s, fre is %s, obj is %s" % (global_best[-1], fre,global_best[-1].fitness.values))
+    # plot convergence curve
     x = []
     y = []
     for i in range(0, len(global_best)):
@@ -155,39 +152,32 @@ def main():
     plt.xlabel('No. of Generations')
     plt.show()
 
+
 def decode(chrom,nbit,nvar,lb,ub):
+    
     """
-        convert binary chrom to float variables
+    reference: Haupt, R. L., & Haupt, S. E. (2004). Practical genetic algorithms. John Wiley & Sons.
+    at the end of this reference book, you can find similar matlab code
+        convert binary representations to float variables
         nbit: number of bits for a one decision variable
         nvar: number of variables
-        chrom: invidual chromsome 
-        nbit*nvar = length of chromsome  
+        chrom: individual chromosome 
+        nbit*nvar = length of chromosome  
         lb: lower bound of the decsion variables
         ub: ub bound of the decision variables
     """
-    # print("Binary Rep = ", end='')
-    # for i in chrom:
-        # print ('{0},'.format(i),end='')
-    # print()
     quant = []
     for i in range(0,nbit):
         quant.append(math.pow(0.5,i+1))
     sum_quant = sum(quant)
     for i in range(0, len(quant)):
         quant[i] = quant[i]/sum_quant
-    # print ('quant = ',quant)
     float_var = [] # decoded float decision variables
     for i in range(0, nvar):
         val = 0
         for j in range(0, nbit):
             val += quant[j]*chrom[i*nbit+j]            
         float_var.append(val*(ub[i]-lb[i])+lb[i])
-
-    # print("float val = ", end='')
-    # for i in float_var:
-        # print ('{0},'.format(i),end='')
-    # print()
-    # os.system('pause')
      
     return float_var
 
