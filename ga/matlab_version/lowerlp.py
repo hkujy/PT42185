@@ -8,20 +8,23 @@ Remarks:
    or no results  
 4. I hope the code is easy to follow 
 """
+
 import os
-import input
+import setinput 
 from graph import graph_class
 import lp
+
 
 def assignment(fre):
     """
         input are the frequencies for the three lines
     """
-    if len(fre) != 4:
-        print("The number of input frequency is not 4")
-        os.system('pause')
+#    if len(fre) != 4:
+#        print("The number of input frequency is not 4")
+#        os.system('pause')
 #  step 1: input network 
-    graph = input.input_network(fre)
+
+    graph = setinput.readnetwork(fre)
 #  step 2: solve model and out results on screen
 
     res = lp.model(graph)

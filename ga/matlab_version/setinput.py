@@ -3,22 +3,29 @@
 2. I manually input the graph data
 3. You can write more general input function for large network and realistic application
 """
+
+
 from graph import bus_line_class,node_class,link_class,graph_class
 
  # a large number for the frequency on the walking link
 LARGE_FRE_DELTA  = 1000.0
 
-def input_network(fre):
+def hello():
+    print("hello world")
+
+
+def readnetwork(fre):
     """
         input the netework of spiess network
     """
     # create graph
     graph = graph_class()
+
     # add lines 
-    graph.lines.append(bus_line_class("G1",0, 1/fre[0]))
-    graph.lines.append(bus_line_class("G2",1, 1/fre[1]))
-    graph.lines.append(bus_line_class("G3",2, 1/fre[2]))
-    graph.lines.append(bus_line_class("G4",3, 1/fre[3]))
+    graph.lines.append(bus_line_class("G1",0, fre[0]/60))
+    graph.lines.append(bus_line_class("G2",1, fre[1]/60))
+    graph.lines.append(bus_line_class("G3",2, fre[2]/60))
+    graph.lines.append(bus_line_class("G4",3, fre[3]/60))
     graph.lines.append(bus_line_class("Walk",4,LARGE_FRE_DELTA))
     #**********Previous Version with specified input******
     # graph.lines.append(bus_line_class("G1",0, 1/6))

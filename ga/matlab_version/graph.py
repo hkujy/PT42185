@@ -1,6 +1,7 @@
 """
     graph class
 """
+
 class bus_line_class():
     """
         bus line class
