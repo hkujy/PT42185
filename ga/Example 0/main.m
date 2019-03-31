@@ -1,15 +1,13 @@
 clear; clc;
 
-%% Example 1: integer -> binary
+%% Example 1: decode GA representation to variables
 
-% integer -> binary
-x = 10;
-binary_x = dec2bin(x);  % return binary Character 
-% binary -> integer
+% case 1: if the decision variables are integer
+x = 10; binary_x = dec2bin(x);  
 y = bin2dec(binary_x);
 
 
-%% Example 2:  Binary -> continous value
+%% Case 2: if the decsion varible is continous variable given upper and lower bound 
 
 % binary_x to continous value
 x = [1,0,1,0,0,1,1,0];
